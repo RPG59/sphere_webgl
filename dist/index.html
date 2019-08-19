@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<canvas width="1024" height="768" id="3D"></canvas>
+
+<script type="x-shader/x-vertex" id="vs">
+    attribute vec4 a_position;
+
+
+    uniform mat4 u_viewMatrix;
+    uniform mat4 u_projMatrix;
+    uniform float z;
+    uniform mat4 u_rtMatrix;
+
+    varying vec3 v_normals;
+    varying vec3 v_pos;
+
+
+    void main() {
+
+        v_normals = a_position.xyz;
+        gl_Position = u_projMatrix * u_viewMatrix * (a_position - vec4(0.0, 0.0, z, -0.1));
+        gl_PointSize = 5.0;
+        v_pos = a_position.xyz;
+        //gl_Position = a_position - vec4(0., 0., z, 0.);
+    }
+</script>
+<script type="x-shader/x-vertex" id="svs">
+    attribute vec4 a_position;
+
+
+    uniform mat4 u_viewMatrix;
+    uniform mat4 u_projMatrix;
+    uniform float z;
+    uniform mat4 u_rtMatrix;
+
+    varying vec3 v_normals;
+
+
+    void main() {
+        
+        v_normals = a_position.xyz;
+        gl_Position = u_projMatrix * u_viewMatrix * (a_position);
+    }
+</script>
+<script type="x-shader/x-fragment" id="fs">
+    precision lowp float;
+
+    varying vec3 v_normals; // now v_normals == v_pos;
+    varying vec3 v_pos;
+
+    vec3 lightColor = vec3(1, 1, 1);
+    float ambientStrength = .1;
+    vec3 lightPos = vec3(1, 1, 1);
+
+
+
+    void main() {
+        vec3 objColor = normalize(v_normals);
+        vec3 norm = normalize(v_normals);
+        vec3 lightDir = normalize(lightPos - v_pos);
+        float diff = max(dot(norm, lightDir), 0.0);
+        vec3 diffuse = diff * lightColor;
+
+        vec3 ambient = ambientStrength * lightColor;
+        vec3 result = (ambient + diffuse) * objColor;
+        gl_FragColor = vec4(result, 1.);
+    }
+</script>
+
+<script type="x-shader/x-fragment" id="sfs">
+    precision lowp float;
+
+    varying vec3 v_normals;
+
+    void main() {
+        gl_FragColor = vec4(v_normals, 1.);
+    }
+</script>
+
+<script type="x-shader/x-vertex" id="postVS">
+    attribute vec4 a_position;
+    
+    varying vec3 v_pos;
+
+
+    void main() {
+
+        gl_Position = (a_position - vec4(0.0, 0.0, z, -0.1));
+        v_pos = a_position.xyz;
+    }
+</script>
+
+<script type="x-shader/x-fragment" id="postFS">
+    precision lowp float;
+
+    varying vec3 v_pos;
+
+
+    
+
+    void main() {
+        gl_FragColor = vec4(0.1, 0.3, 0.8, .1);
+    }
+</script>
+
+<script>
+    gl = null;
+    const canvas = document.getElementById('3D');
+
+    try {
+        gl = canvas.getContext('webgl2');
+    } catch (e) {
+        console.log('webGL2 is not ok!');
+    }
+</script>
+<script src="./bundle.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "sphere",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webpack.config.js",
+  "dependencies": {
+    "gulp-connect": "^5.7.0",
+    "gulp": "^4.0.2"
+  },
+  "devDependencies": {
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2",
+    "webpack-dev-server": "^3.4.1"
+  },
+  "scripts": {
+    "start": "webpack-dev-server",
+    "webpack": "webpack"
+  },
+  "author": "",
+  "license": "ISC"
+}
