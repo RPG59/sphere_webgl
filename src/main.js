@@ -275,23 +275,60 @@ function main() {
     mat4.fromQuat(mtt, qt);
     console.log(qt);
     // const mtt = mat4.
-    
+
     gl.uniform1i(gl.getUniformLocation(sphereShader.program, 'image'), 0);
 
 
     setInterval(() => {
-        const t = Date.now() / 1000;
-        const c = Math.cos(t);
-        const s = Math.sin(t);
-        const viewMatrix = new float4x4().lookAt([2 * c, 0, 2 * s], [0, 0, 0], [0, 1, 0]);
-        gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
-        gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_projMatrix'), false, proj);
-        gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_modelMatrix'), false, mtt);
-        gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'z'), 0);
 
-        gl.clearColor(0, 0, 0, .5);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        mesh.render(6);
+        const pingPongFBO = [];
+        const pingPongBuffer = [];
+        const colorBuffers = [];
+
+        pingPongFBO.push(gl.createFramebuffer());
+        pingPongFBO.push(gl.createFramebuffer());
+        pingPongBuffer.push(gl.createTexture());
+        pingPongBuffer.push(gl.createTexture());
+
+        // for (let i = 0; i < 2; ++i) {
+        //     gl.bindFramebuffer(gl.FRAMEBUFFER, pingPongBuffer[i]);
+        //     gl.bindTexture(gl.TEXTURE_2D, pingPongBuffer[i]);
+        //     gl.texImage2D(gl.TEXTURE_2D, null, gl.RGB, 1024, 768, null, gl.RGB, gl.FLOAT, null);
+        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.LINEAR);
+        //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.LINEAR);
+        //     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, pingPongBuffer[i], null);
+        // }
+
+
+        let horizontal = true;
+        let first_iteration = true;
+        let amount = 10;
+        for (let i = 0; i < amount; i++) {
+        //     gl.bindFramebuffer(gl.FRAMEBUFFER, pingPongFBO[horizontal]);
+        //     gl.uniform1i(gl.getUniformLocation(sphereShader.program, 'horizontal'), +horizontal);
+        //     gl.bindTexture(gl.TEXTURE_2D, first_iteration ? colorBuffers[1] : pingPongBuffer[!horizontal]);
+
+
+            const t = Date.now() / 1000;
+            const c = Math.cos(t);
+            const s = Math.sin(t);
+            const viewMatrix = new float4x4().lookAt([2 * c, 0, 2 * s], [0, 0, 0], [0, 1, 0]);
+            gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
+            gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_projMatrix'), false, proj);
+            gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_modelMatrix'), false, mtt);
+            gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'z'), 0);
+
+            gl.clearColor(0, 0, 0, .5);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            mesh.render(6);
+        
+            horizontal = !horizontal;
+            if (first_iteration)
+                first_iteration = false;
+        }
+        // gl.bindFramebuffer(gl.FRAMEBUFFER, 0);
 
     }, 20)
 

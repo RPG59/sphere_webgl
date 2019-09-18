@@ -12,8 +12,8 @@
 
 <canvas width="1024" height="768" id="3D"></canvas>
 
-<script type="x-shader/x-vertex" id="vs">
-    attribute vec4 a_position;
+<script type="x-shader/x-vertex" id="vs">#version 300 es
+    in vec4 a_position;
 
 
     uniform mat4 u_viewMatrix;
@@ -22,8 +22,8 @@
     uniform float z;
     uniform mat4 u_rtMatrix;
 
-    varying vec3 v_normals;
-    varying vec3 v_pos;
+    out vec3 v_normals;
+    out vec3 v_pos;
 
     void main() {
     
@@ -54,11 +54,12 @@
         gl_Position = u_projMatrix * u_viewMatrix * u_mMatrix * (a_position);
     }
 </script>
-<script type="x-shader/x-fragment" id="fs">#version 200 es
-    precision lowp float;
+<script type="x-shader/x-fragment" id="fs">#version 300 es
+    precision highp float;
+    out vec4 FragColor;
 
-    varying vec3 v_normals; // now v_normals == v_pos;
-    varying vec3 v_pos;
+    in vec3 v_normals; // now v_normals == v_pos;
+    in vec3 v_pos;
     
     uniform sampler2D image;
     uniform bool horizontal;
@@ -70,12 +71,12 @@
 
 
     void main() {
-        float wt[4];
+        float wt[5];
         wt[0] = 0.225027;
-        wt[0] = 0.1945946;
-        wt[0] = 0.1216216;
-        wt[0] = 0.054054;
-        wt[0] = 0.016216;
+        wt[1] = 0.1945946;
+        wt[2] = 0.1216216;
+        wt[3] = 0.054054;
+        wt[4] = 0.016216;
         
         vec3 objColor = normalize(v_normals);
         vec3 norm = normalize(v_normals);
@@ -87,24 +88,24 @@
         //vec3 result = (ambient + diffuse) * objColor;
         //gl_FragColor = vec4(result, 1.);
         
-        vec2 tex_offset = textureSize(image, 0);
-        vec3 result = texture2D(image, v_normals.xy).rgb * wt[0];
-//        if(horizontal) {
-//            for(int i = 1; i < 5; ++i)
-//            {
-//                result += texture2D(image, v_normals.xy + vec2(tex_offset.x * i, 0.0)).rgb * wt[i];
-//                result += texture2D(image, v_normals.xy - vec2(tex_offset.x * i, 0.0)).rgb * wt[i];
-//            }
-//        } else {
-//            for(int i = 1; i < 5; ++i)
-//            {
-//                result += texture2D(image, v_normals.xy + vec2(0.0, tex_offset.y * i)).rgb * wt[i];
-//                result += texture2D(image, v_normals.xy - vec2(0.0, tex_offset.y * i)).rgb * wt[i];
-//            }
-//        }
-        
-        
-        gl_FragColor = vec4(result, 1.0);
+          vec2 tex_offset = 1.0 / vec2(textureSize(image, 0));
+          vec3 result = texture(image, v_normals.xy).rgb * wt[0];
+          if(horizontal) {
+              for(int i = 1; i < 5; ++i)
+              {
+                  result += texture(image, v_normals.xy + vec2(tex_offset.x * float(i), 0.0)).rgb * wt[i];
+                  result += texture(image, v_normals.xy - vec2(tex_offset.x * float(i), 0.0)).rgb * wt[i];
+              }
+          } else {
+              for(int i = 1; i < 5; ++i)
+              {
+                  result += texture(image, v_normals.xy + vec2(0.0, tex_offset.y * float(i))).rgb * wt[i];
+                  result += texture(image, v_normals.xy - vec2(0.0, tex_offset.y * float(i))).rgb * wt[i];
+              }
+            }
+
+        FragColor = vec4(result, 1.0);
+        //FragColor = texture(image, v_normals.xy);
     }
 </script>
 
