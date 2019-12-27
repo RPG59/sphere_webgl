@@ -11,8 +11,8 @@
 
 <canvas width="1024" height="768" id="3D"></canvas>
 
-<script type="x-shader/x-vertex" id="vs">
-    attribute vec4 a_position;
+<script type="x-shader/x-vertex" id="vs">#version 300 es
+    layout(location=0) in vec4 a_position;
 
 
     uniform mat4 u_viewMatrix;
@@ -20,8 +20,8 @@
     uniform float z;
     uniform mat4 u_rtMatrix;
 
-    varying vec3 v_normals;
-    varying vec3 v_pos;
+    out vec3 v_normals;
+    out vec3 v_pos;
 
 
     void main() {
@@ -51,11 +51,13 @@
         gl_Position = u_projMatrix * u_viewMatrix * (a_position);
     }
 </script>
-<script type="x-shader/x-fragment" id="fs">
+<script type="x-shader/x-fragment" id="fs">#version 300 es
     precision lowp float;
 
-    varying vec3 v_normals; // now v_normals == v_pos;
-    varying vec3 v_pos;
+    in vec3 v_normals; // now v_normals == v_pos;
+    in vec3 v_pos;
+
+    out vec4 FragColor;
 
     vec3 lightColor = vec3(1, 1, 1);
     float ambientStrength = .1;
@@ -72,7 +74,7 @@
 
         vec3 ambient = ambientStrength * lightColor;
         vec3 result = (ambient + diffuse) * objColor;
-        gl_FragColor = vec4(result, 1.);
+        FragColor = vec4(result, 1.);
     }
 </script>
 
@@ -112,6 +114,32 @@
     }
 </script>
 
+<script type="x-shader/x-vertex" id="RtoTvs">#version 300 es
+    layout(location=0) in vec3 a_position;
+    out vec2 UV;
+
+    void main() {
+        gl_Position = vec4(a_position, 1.);
+        UV = a_position.xy;
+    }
+</script>
+
+<script type="x-shader/x-fragment" id="RtoT">#version 300 es
+    precision lowp float;
+    
+    in vec2 UV;
+    out vec4 color;
+
+    uniform sampler2D renderedTexture;
+    uniform float time;
+
+    void main() {
+        //color = vec4(0., 0.3, .0, 1.);
+        //color = vec4(texture( renderedTexture, UV + 0.005*vec2( sin(time+1024.0*UV.x),cos(time+768.0*UV.y)) ).xyz, .5 );
+        color = texture(renderedTexture, UV);
+    }
+</script>
+
 <script>
     gl = null;
     const canvas = document.getElementById('3D');
@@ -124,5 +152,6 @@
 </script>
 <script src="./bundle.js"></script>
 </body>
+
 
 </html>

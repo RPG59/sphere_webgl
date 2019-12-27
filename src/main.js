@@ -251,11 +251,36 @@ function main() {
     gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_rtMatrix'), false, new float4x4().rotate(angle).elements);
     
     
-    const postProcessing = new PostProcess();
+    //const postProcessing = new PostProcess();
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, postProcessing.frameBuffer);
+    //gl.bindFramebuffer(gl.FRAMEBUFFER, postProcessing.frameBuffer);
+
+    const framebufferName = gl.createFramebuffer();
+    const renderedTexture = gl.createTexture();
+    const depthRenderBuffer = gl.createRenderbuffer();
+    const drawBuffers = [gl.COLOR_ATTACHMENT0];
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, framebufferName);
+    gl.bindTexture(gl.TEXTURE_2D, renderedTexture);
+    gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderBuffer);
+
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1024, 768, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, 1024, 768);
+    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderBuffer);
+
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, renderedTexture, 0);
+    gl.drawBuffers(drawBuffers);
+
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+        console.error("Framebuffer is not ok!");
+    }
+
+
     
-    setInterval(() => {
+    //setInterval(() => {
         const t = Date.now() / 1000;
         const c = Math.cos(t);
         const s = Math.sin(t);
@@ -263,18 +288,7 @@ function main() {
 
 
         gl.clearColor(0, 0, 0, 1);
-        //
-        // gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
-
-        // gl.stencilFunc(gl.ALWAYS, 1, 0xFF);
-        // gl.stencilMask(0xFF);
-        // mesh.render(sph_in);
-
-        // gl.stencilFunc(gl.NOTEQUAL, 1, 0xFF);
-        // gl.stencilMask(0x00);
-        // gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.DEPTH_TEST);
         const mesh = new VertexArray(sph_vtx, sph_idx);
         sphereShader.enable();
@@ -282,25 +296,14 @@ function main() {
         gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_projMatrix'), false, projectionMatrix);
         gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'z'), 0);
         mesh.render(sph_in);
+    //}, 100)
+
+    renderToTextureEMIT();
 
 
-        selectedShader.enable();
-        gl.uniformMatrix4fv(gl.getUniformLocation(selectedShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
-        gl.uniformMatrix4fv(gl.getUniformLocation(selectedShader.program, 'u_projMatrix'), false, projectionMatrix);
-        gl.uniform1f(gl.getUniformLocation(selectedShader.program, 'z'), 0);
-        const window = new VertexArray(vertices, new Uint16Array([
-            0, 1, 2,
-            2, 3, 0
-        ]));
-        window.render(6);
-        selectedShader.disable();
-        
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        gl.disable(gl.DEPTH_TEST);
-        gl.clearColor(1, 1, 1, 1);
-        
 
-    }, 100)
+
+    
 
 }
 
@@ -317,3 +320,54 @@ function float4Perspective(fovy, aspect, near, far) {
         0, 0, 2 * far * near * nf, 0
     ])
 }
+
+function renderToTextureINIT() {
+}
+
+function renderToTextureEMIT() {
+    const quadVertexArrayId = gl.createVertexArray();
+    const quadVertexBuffer = gl.createBuffer();
+
+    const gQuadVertex = new Float32Array([
+            -1.0, -1.0, 0.0,
+    1.0, -1.0, 0.0,
+    -1.0,  1.0, 0.0,
+    -1.0,  1.0, 0.0,
+    1.0, -1.0, 0.0,
+    1.0,  1.0, 0.0,
+    ]);
+
+    gl.bindVertexArray(quadVertexArrayId);
+    gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, gQuadVertex, gl.STATIC_DRAW);
+
+    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0)
+    gl.enableVertexAttribArray(0);
+
+
+    const renderToTexturShader = new Shader('RtoTvs', 'RtoT');
+    renderToTexturShader.enable()
+
+    const renderedTextureU_ = gl.getUniformLocation(renderToTexturShader.program, 'renderedTexture')
+    const timeU_ = gl.getUniformLocation(renderToTexturShader.program, 'time')
+
+    if(!renderedTextureU_) {
+        //debugger;
+    }
+
+    if(!timeU_) {
+        //debugger;
+    }
+
+    gl.uniform1f(timeU_, 100.);
+    gl.uniform1i(renderedTextureU_, 0);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+    //gl.viewport(0, 0, 1024, 768);
+
+
+    ///gl.clearColor(.5, .1, .1, .5);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+}
+
+
