@@ -33,39 +33,27 @@
         //gl_Position = a_position - vec4(0., 0., z, 0.);
     }
 </script>
-<script type="x-shader/x-vertex" id="svs">
-    attribute vec4 a_position;
-
-
-    uniform mat4 u_viewMatrix;
-    uniform mat4 u_projMatrix;
-    uniform float z;
-    uniform mat4 u_rtMatrix;
-
-    varying vec3 v_normals;
-
-
-    void main() {
-        
-        v_normals = a_position.xyz;
-        gl_Position = u_projMatrix * u_viewMatrix * (a_position);
-    }
-</script>
 <script type="x-shader/x-fragment" id="fs">#version 300 es
     precision lowp float;
 
     in vec3 v_normals; // now v_normals == v_pos;
     in vec3 v_pos;
-
     out vec4 FragColor;
 
+    uniform sampler2D sampler;
+    uniform sampler2D sampler2;
+
     vec3 lightColor = vec3(1, 1, 1);
-    float ambientStrength = .1;
-    vec3 lightPos = vec3(1, 1, 1);
+    float lightPower = 40.;
 
-
+    float ambientStrength = .5;
+    vec3 lightPos = vec3(1., 1., 1.);
 
     void main() {
+
+        vec4 normalTexture = texture(sampler2, v_normals.xy);
+        vec4 texture = texture(sampler, v_pos.xy);
+
         vec3 objColor = normalize(v_normals);
         vec3 norm = normalize(v_normals);
         vec3 lightDir = normalize(lightPos - v_pos);
@@ -74,71 +62,14 @@
 
         vec3 ambient = ambientStrength * lightColor;
         vec3 result = (ambient + diffuse) * objColor;
-        FragColor = vec4(result, 1.);
+
+
+        //FragColor = vec4(.1, .2, .3, 1.);
+
+        FragColor = texture * length(normalTexture) * vec4(result, 1.);
     }
 </script>
 
-<script type="x-shader/x-fragment" id="sfs">
-    precision lowp float;
-
-    varying vec3 v_normals;
-
-    void main() {
-        gl_FragColor = vec4(v_normals, 1.);
-    }
-</script>
-
-<script type="x-shader/x-vertex" id="postVS">
-    attribute vec4 a_position;
-    
-    varying vec3 v_pos;
-
-
-    void main() {
-
-        gl_Position = (a_position - vec4(0.0, 0.0, z, -0.1));
-        v_pos = a_position.xyz;
-    }
-</script>
-
-<script type="x-shader/x-fragment" id="postFS">
-    precision lowp float;
-
-    varying vec3 v_pos;
-
-
-    
-
-    void main() {
-        gl_FragColor = vec4(0.1, 0.3, 0.8, .1);
-    }
-</script>
-
-<script type="x-shader/x-vertex" id="RtoTvs">#version 300 es
-    layout(location=0) in vec3 a_position;
-    out vec2 UV;
-
-    void main() {
-        gl_Position = vec4(a_position, 1.);
-        UV = a_position.xy;
-    }
-</script>
-
-<script type="x-shader/x-fragment" id="RtoT">#version 300 es
-    precision lowp float;
-    
-    in vec2 UV;
-    out vec4 color;
-
-    uniform sampler2D renderedTexture;
-    uniform float time;
-
-    void main() {
-        //color = vec4(0., 0.3, .0, 1.);
-        //color = vec4(texture( renderedTexture, UV + 0.005*vec2( sin(time+1024.0*UV.x),cos(time+768.0*UV.y)) ).xyz, .5 );
-        color = texture(renderedTexture, UV);
-    }
-</script>
 
 <script>
     gl = null;

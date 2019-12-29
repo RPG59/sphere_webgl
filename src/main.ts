@@ -1,4 +1,8 @@
+declare const gl: WebGL2RenderingContext;
+
 class Shader {
+    program: any;
+
     constructor(vsId, fsId) {
         const vs = this.createShader(gl.VERTEX_SHADER, vsId);
         const fs = this.createShader(gl.FRAGMENT_SHADER, fsId);
@@ -40,6 +44,8 @@ class Shader {
 }
 
 class float4x4 {
+    elements;
+
     constructor() {
         this.elements = new Float32Array([
             1, 0, 0, 0,
@@ -115,6 +121,10 @@ class float4x4 {
 }
 
 class VertexArray {
+    vbo;
+    ibo;
+    counter;
+
     constructor(vertices, indices) {
         this.vbo = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
@@ -149,138 +159,93 @@ class VertexArray {
 
 }
 
-class PostProcess {
-    constructor() {
-        this.frameBuffer = gl.createFramebuffer();
-        this.textureColorBuffer = gl.createTexture();
-        this.rbo = gl.createRenderbuffer();
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, this.frameBuffer);
-        gl.bindTexture(gl.TEXTURE_2D, this.textureColorBuffer);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1024, 768, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.textureColorBuffer, 0);
-
-        gl.bindRenderbuffer(gl.RENDERBUFFER, this.rbo);
-        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, 1024, 768);
-        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_STENCIL_ATTACHMENT, gl.RENDERBUFFER, this.rbo);
-
-        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-            console.error('ERROR: Framebuffer is not ok!');
-        }
-
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    }
-
-}
-
 function main() {
     gl.enable(gl.DEPTH_TEST);
     const sphereShader = new Shader('vs', 'fs');
-    const selectedShader = new Shader('svs', 'sfs');
 
-    const vertices = new Float32Array([
-        -0.5, 0.5, 1.0,
-        0.5, 0.5, 1.0,
-        0.5, -0.5, 1.0,
-        -0.5, -0.5, 1.0
-        
-    ]);
 
     const M = 8, N = 16;
     const sph_n = ((M + 1) * N);
-    let sph_vtx = new Float32Array(3 * sph_n);
 
-    for (let i = 0; i < M + 1; ++i) {
-        const phi = i * Math.PI / M;
-        const y = Math.cos(phi);
-        const r = Math.sin(phi);
-        for (let j = 0; j < N; ++j) {
-            const th = j * 2 * Math.PI / N;
-            const idx = (j + i * N) * 3;
-            sph_vtx[idx] = r * Math.cos(th);
-            sph_vtx[idx + 1] = y;
-            sph_vtx[idx + 2] = r * Math.sin(th);
+    let sph_vtx = new Float32Array([
+        // -.5, -.5, 1.,
+        // .5, -.5, 1.,
+        // -.5, .5, 1.,
+        // .5, .5, 1.,
+        -1., -1., 1.,
+        1., -1., 1.,
+        -1., 1., 1.,
+        1., 1., 1.,
+    ]);
+    // let sph_vtx = new Float32Array(3 * sph_n);
 
-        }
-    }
+    // for (let i = 0; i < M + 1; ++i) {
+    //     const phi = i * Math.PI / M;
+    //     const y = Math.cos(phi);
+    //     const r = Math.sin(phi);
+    //     for (let j = 0; j < N; ++j) {
+    //         const th = j * 2 * Math.PI / N;
+    //         const idx = (j + i * N) * 3;
+    //         sph_vtx[idx] = r * Math.cos(th);
+    //         sph_vtx[idx + 1] = y;
+    //         sph_vtx[idx + 2] = r * Math.sin(th);
 
-    const sph_in = M * (N * 2 + 2) + (M - 1) * 2;
-    const sph_idx = new Uint16Array(sph_in);
-    let idx = 0;
-    for (let i = 0; i < M; ++i) {
-        for (let j = 0; j < N; ++j) {
-            sph_idx[idx++] = i * N + j;
-            sph_idx[idx++] = (i + 1) * N + j;
-        }
-        sph_idx[idx++] = i * N;
-        sph_idx[idx++] = (i + 1) * N;
-
-        if (i < M - 1) {
-            sph_idx[idx++] = (i + 1) * N + (N - 1);
-            sph_idx[idx++] = (i + 1)
-        }
-    }
+    //     }
+    // }
 
 
-    // console.log(sph_in);
-    // console.log(sph_idx);
+
+    const sph_in = 6;
+    const sph_idx = new Uint16Array([
+        0, 1, 2,
+        2, 3, 1
+    ]);
+    // const sph_in = M * (N * 2 + 2) + (M - 1) * 2;
+    // const sph_idx = new Uint16Array(sph_in);
 
 
+    // let idx = 0;
+    // for (let i = 0; i < M; ++i) {
+    //     for (let j = 0; j < N; ++j) {
+    //         sph_idx[idx++] = i * N + j;
+    //         sph_idx[idx++] = (i + 1) * N + j;
+    //     }
+    //     sph_idx[idx++] = i * N;
+    //     sph_idx[idx++] = (i + 1) * N;
+
+    //     if (i < M - 1) {
+    //         sph_idx[idx++] = (i + 1) * N + (N - 1);
+    //         sph_idx[idx++] = (i + 1)
+    //     }
+    // }
+
+
+
+    // @ts-ignore
     const projectionMatrix = float4Perspective(Math.PI / 2, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
     let angle = 0;
 
 
     sphereShader.enable();
-
-
-    // gl.enable(gl.BLEND);
-    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    // gl.enable(gl.CULL_FACE)
-    // gl.cullFace(gl.FRONT)
-    // gl.frontFace(gl.CW);
-
-
-    // gl.enable(gl.CULL_FACE);
-    // gl.cullFace(gl.FRONT)
-    // gl.depthMask(false);
-    // gl.depthFunc(gl.ALWAYS);
-    // gl.enable(gl.STENCIL_TEST);
-
     gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_rtMatrix'), false, new float4x4().rotate(angle).elements);
+    const samplerLocation = gl.getUniformLocation(sphereShader.program, 'sampler');
+    const samplerLocation2 = gl.getUniformLocation(sphereShader.program, 'sampler2');
     
-    
-    //const postProcessing = new PostProcess();
-
-    //gl.bindFramebuffer(gl.FRAMEBUFFER, postProcessing.frameBuffer);
-
-    const framebufferName = gl.createFramebuffer();
-    const renderedTexture = gl.createTexture();
-    const depthRenderBuffer = gl.createRenderbuffer();
-    const drawBuffers = [gl.COLOR_ATTACHMENT0];
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER, framebufferName);
-    gl.bindTexture(gl.TEXTURE_2D, renderedTexture);
-    gl.bindRenderbuffer(gl.RENDERBUFFER, depthRenderBuffer);
-
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1024, 768, 0, gl.RGB, gl.UNSIGNED_BYTE, null);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-
-    gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_STENCIL, 1024, 768);
-    gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, depthRenderBuffer);
-
-    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, renderedTexture, 0);
-    gl.drawBuffers(drawBuffers);
-
-    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-        console.error("Framebuffer is not ok!");
+    if(!samplerLocation) {
+        console.log('sampler not found!');
+    } else {
+        console.log('sampler loaction: ', samplerLocation);
+        gl.uniform1i(samplerLocation, 0);
     }
 
+    if(!samplerLocation2) {
+        console.log('sampler2 not found!');
+    } else {
+        console.log('sampler2 loaction: ', samplerLocation2);
+        gl.uniform1i(samplerLocation2, 1);
+    }
 
-    
-    //setInterval(() => {
+    const render = () => {
         const t = Date.now() / 1000;
         const c = Math.cos(t);
         const s = Math.sin(t);
@@ -296,18 +261,44 @@ function main() {
         gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_projMatrix'), false, projectionMatrix);
         gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'z'), 0);
         mesh.render(sph_in);
-    //}, 100)
+        requestAnimationFrame(render)
+    }
 
-    renderToTextureEMIT();
+    render();
 
-
-
-
-    
 
 }
 
-main();
+(async () => {
+    const texture1 = await creatTexture('SpecularMap.png');
+    const texture2 = await creatTexture('NormalMap (2).png');
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture1);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, texture2);
+
+    main();
+})()
+
+
+
+async function creatTexture(path): Promise<WebGLTexture> {
+    return new Promise(res => {
+        const texture = gl.createTexture();
+        const img = new Image();
+
+        img.src = path;
+        img.onload = () => {
+            gl.bindTexture(gl.TEXTURE_2D, texture);           
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+
+            res(texture);
+        }
+    })
+}
 
 function float4Perspective(fovy, aspect, near, far) {
     const f = 1 / Math.tan(fovy / 2);
@@ -320,54 +311,4 @@ function float4Perspective(fovy, aspect, near, far) {
         0, 0, 2 * far * near * nf, 0
     ])
 }
-
-function renderToTextureINIT() {
-}
-
-function renderToTextureEMIT() {
-    const quadVertexArrayId = gl.createVertexArray();
-    const quadVertexBuffer = gl.createBuffer();
-
-    const gQuadVertex = new Float32Array([
-            -1.0, -1.0, 0.0,
-    1.0, -1.0, 0.0,
-    -1.0,  1.0, 0.0,
-    -1.0,  1.0, 0.0,
-    1.0, -1.0, 0.0,
-    1.0,  1.0, 0.0,
-    ]);
-
-    gl.bindVertexArray(quadVertexArrayId);
-    gl.bindBuffer(gl.ARRAY_BUFFER, quadVertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, gQuadVertex, gl.STATIC_DRAW);
-
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0)
-    gl.enableVertexAttribArray(0);
-
-
-    const renderToTexturShader = new Shader('RtoTvs', 'RtoT');
-    renderToTexturShader.enable()
-
-    const renderedTextureU_ = gl.getUniformLocation(renderToTexturShader.program, 'renderedTexture')
-    const timeU_ = gl.getUniformLocation(renderToTexturShader.program, 'time')
-
-    if(!renderedTextureU_) {
-        //debugger;
-    }
-
-    if(!timeU_) {
-        //debugger;
-    }
-
-    gl.uniform1f(timeU_, 100.);
-    gl.uniform1i(renderedTextureU_, 0);
-
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null)
-    //gl.viewport(0, 0, 1024, 768);
-
-
-    ///gl.clearColor(.5, .1, .1, .5);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
-}
-
 
