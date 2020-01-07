@@ -1,4 +1,25 @@
-declare const gl: WebGL2RenderingContext;
+declare const gl: WebGLRenderingContext;
+
+
+// v1, v2
+// Lv1 + (1 - L) * v2
+
+/*
+
+   key frame 1    key frame 2
+-------|-------|-------|-------|-------|
+       t1      t       t2
+
+        t - t1
+L = 1 - -------
+        t2 - t1
+
+V(t) =
+
+*/
+
+let COUNT = 0;
+
 
 class Shader {
     program: any;
@@ -125,17 +146,18 @@ class VertexArray {
     ibo;
     counter;
 
-    constructor(vertices, indices) {
+    constructor(vertices, indices, slot) {
         this.vbo = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
         gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-        gl.enableVertexAttribArray(0);
-        gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(slot);
+        gl.vertexAttribPointer(slot, 3, gl.FLOAT, false, 0, 0);
 
         this.ibo = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
         this.counter = 0;
+
     }
 
     bind() {
@@ -151,7 +173,6 @@ class VertexArray {
     render(count) {
         // gl.drawArrays(gl.POINTS, 0, count);
         // console.log(count);
-
         gl.drawElements(gl.TRIANGLE_STRIP, count, gl.UNSIGNED_SHORT, 0);
         // gl.drawElements(gl.LINE_STRIP, this.counter % count, gl.UNSIGNED_SHORT, 0);
         this.counter++;
@@ -177,6 +198,16 @@ function main() {
         -1., 1., 1.,
         1., 1., 1.,
     ]);
+    let sph_vtx2 = new Float32Array([
+        // -.5, -.5, 1.,
+        // .5, -.5, 1.,
+        // -.5, .5, 1.,
+        // .5, .5, 1.,
+        -1., -1., 1.,
+        1., -1., 1.,
+        -1., 1., 1.,
+        1., -1., 1.,
+    ]);
     // let sph_vtx = new Float32Array(3 * sph_n);
 
     // for (let i = 0; i < M + 1; ++i) {
@@ -194,11 +225,15 @@ function main() {
     // }
 
 
-
     const sph_in = 6;
     const sph_idx = new Uint16Array([
         0, 1, 2,
         2, 3, 1
+    ]);
+    
+    const sph_idx2 = new Uint16Array([
+        0, 1, 2,
+        2, 2, 2
     ]);
     // const sph_in = M * (N * 2 + 2) + (M - 1) * 2;
     // const sph_idx = new Uint16Array(sph_in);
@@ -220,7 +255,6 @@ function main() {
     // }
 
 
-
     // @ts-ignore
     const projectionMatrix = float4Perspective(Math.PI / 2, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.1, 100.0);
     let angle = 0;
@@ -228,25 +262,44 @@ function main() {
 
     sphereShader.enable();
     gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_rtMatrix'), false, new float4x4().rotate(angle).elements);
+    gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_rotation'), false, new float4x4().rotate(45).elements);
     const samplerLocation = gl.getUniformLocation(sphereShader.program, 'sampler');
     const samplerLocation2 = gl.getUniformLocation(sphereShader.program, 'sampler2');
-    
-    if(!samplerLocation) {
+
+    if (!samplerLocation) {
         console.log('sampler not found!');
     } else {
         console.log('sampler loaction: ', samplerLocation);
         gl.uniform1i(samplerLocation, 0);
     }
 
-    if(!samplerLocation2) {
+    if (!samplerLocation2) {
         console.log('sampler2 not found!');
     } else {
         console.log('sampler2 loaction: ', samplerLocation2);
         gl.uniform1i(samplerLocation2, 1);
     }
+    
+    // // @ts-ignore
+    // const VAO = gl.createVertexArray();
+    // // @ts-ignore
+    // gl.bindVertexArray(VAO);
+
+    const mesh = new VertexArray(sph_vtx, sph_idx, 0);
+    const buff2 = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buff2);
+    gl.bufferData(gl.ARRAY_BUFFER, sph_vtx2, gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(1);
+    gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
 
     const render = () => {
-        const t = Date.now() / 1000;
+
+        // if (COUNT === 60) {
+        //     COUNT = 0;
+        // }
+
+        // const t = Date.now() / 1000;
+	    const t = 5;
         const c = Math.cos(t);
         const s = Math.sin(t);
         const viewMatrix = new float4x4().lookAt([2 * c, 0, 2 * s], [0, 0, 0], [0, 1, 0]);
@@ -255,14 +308,17 @@ function main() {
         gl.clearColor(0, 0, 0, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
         gl.enable(gl.DEPTH_TEST);
-        const mesh = new VertexArray(sph_vtx, sph_idx);
         sphereShader.enable();
         gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
         gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_projMatrix'), false, projectionMatrix);
+        gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'u_time'), Math.abs(Math.sin(Date.now() / 1000)));
         gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'z'), 0);
         mesh.render(sph_in);
+        COUNT++;
+        // console.log(Math.sin(Date.now()));
         requestAnimationFrame(render)
     }
+
 
     render();
 
@@ -282,7 +338,6 @@ function main() {
 })()
 
 
-
 async function creatTexture(path): Promise<WebGLTexture> {
     return new Promise(res => {
         const texture = gl.createTexture();
@@ -290,7 +345,7 @@ async function creatTexture(path): Promise<WebGLTexture> {
 
         img.src = path;
         img.onload = () => {
-            gl.bindTexture(gl.TEXTURE_2D, texture);           
+            gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);

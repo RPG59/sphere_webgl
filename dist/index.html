@@ -13,21 +13,28 @@
 
 <script type="x-shader/x-vertex" id="vs">#version 300 es
     layout(location=0) in vec4 a_position;
+    layout(location=1) in vec4 a_position2;
 
 
     uniform mat4 u_viewMatrix;
     uniform mat4 u_projMatrix;
     uniform float z;
     uniform mat4 u_rtMatrix;
+    uniform float u_time;
+    uniform mat4 u_rotation;
 
     out vec3 v_normals;
     out vec3 v_pos;
 
 
     void main() {
-
+        float L = (u_time + 1.) / 2.;
+        //float L = 0.;
+        vec4 currentPos = L * a_position + (1. - L) * a_position2;
+       // vec4 currentPos = a_position;
+        
         v_normals = a_position.xyz;
-        gl_Position = u_projMatrix * u_viewMatrix * (a_position - vec4(0.0, 0.0, z, -0.1));
+        gl_Position = u_projMatrix * u_viewMatrix * (currentPos - vec4(0.0, 0.0, z, -0.1));
         gl_PointSize = 5.0;
         v_pos = a_position.xyz;
         //gl_Position = a_position - vec4(0., 0., z, 0.);
@@ -64,9 +71,9 @@
         vec3 result = (ambient + diffuse) * objColor;
 
 
-        //FragColor = vec4(.1, .2, .3, 1.);
+        FragColor = vec4(.1, .2, .3, 1.);
 
-        FragColor = texture * length(normalTexture) * vec4(result, 1.);
+        //FragColor = texture * length(normalTexture) * vec4(result, 1.);
     }
 </script>
 
