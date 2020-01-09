@@ -94,10 +94,10 @@ class float4x4 {
 		return this;
 	}
 
-	translate(x, y, z) {
-		this.elements[0 + 3 * 4] = x;
-		this.elements[1 + 3 * 4] = y;
-		this.elements[2 + 3 * 4] = z;
+	translate(arr) {
+		this.elements[0 + 3 * 4] = arr[0];
+		this.elements[1 + 3 * 4] = arr[1];
+		this.elements[2 + 3 * 4] = arr[2];
 
 		return this;
 	}
@@ -225,47 +225,47 @@ function main() {
 
 
 	let sph_vtx = new Float32Array([
-		-0.5, -0.5, -0.5,
-		0.5, -0.5, -0.5,
-		0.5,  0.5, -0.5,
-		0.5,  0.5, -0.5,
-		-0.5,  0.5, -0.5,
-		-0.5, -0.5, -0.5,
+        -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
+         0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
+         0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
+         0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
+        -0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
+        -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
 
-		-0.5, -0.5,  0.5,
-		0.5, -0.5,  0.5,
-		0.5,  0.5,  0.5,
-		0.5,  0.5,  0.5,
-		-0.5,  0.5,  0.5,
-		-0.5, -0.5,  0.5,
+        -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
+         0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
+         0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
+         0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
+        -0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
+        -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
 
-		-0.5,  0.5,  0.5,
-		-0.5,  0.5, -0.5,
-		-0.5, -0.5, -0.5,
-		-0.5, -0.5, -0.5,
-		-0.5, -0.5,  0.5,
-		-0.5,  0.5,  0.5,
+        -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
+        -0.5,  0.5, -0.5, -1.0,  0.0,  0.0,
+        -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
+        -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
+        -0.5, -0.5,  0.5, -1.0,  0.0,  0.0,
+        -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
 
-		0.5,  0.5,  0.5,
-		0.5,  0.5, -0.5,
-		0.5, -0.5, -0.5,
-		0.5, -0.5, -0.5,
-		0.5, -0.5,  0.5,
-		0.5,  0.5,  0.5,
+         0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
+         0.5,  0.5, -0.5,  1.0,  0.0,  0.0,
+         0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
+         0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
+         0.5, -0.5,  0.5,  1.0,  0.0,  0.0,
+         0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
 
-		-0.5, -0.5, -0.5,
-		0.5, -0.5, -0.5,
-		0.5, -0.5,  0.5,
-		0.5, -0.5,  0.5,
-		-0.5, -0.5,  0.5,
-		-0.5, -0.5, -0.5,
+        -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
+         0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
+         0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
+         0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
+        -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
+        -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
 
-		-0.5,  0.5, -0.5,
-		0.5,  0.5, -0.5,
-		0.5,  0.5,  0.5,
-		0.5,  0.5,  0.5,
-		-0.5,  0.5,  0.5,
-		-0.5,  0.5, -0.5,
+        -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
+         0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
+         0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
+         0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
+        -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
+        -0.5,  0.5, -0.5,  0.0,  1.0,  0.0
 	]);
 
 	// @ts-ignore
@@ -287,7 +287,9 @@ function main() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, buff1);
 	gl.bufferData(gl.ARRAY_BUFFER, sph_vtx, gl.STATIC_DRAW);
 	gl.enableVertexAttribArray(0);
-	gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 12, 0);
+	gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 24, 0);
+	gl.enableVertexAttribArray(1);
+	gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 24, 12);
 
 	
 	// const modelMatrix = new Float32Array(new Array(16).fill(0));
@@ -301,8 +303,8 @@ function main() {
 	
 
 	// glm.mat4.scale(modelMatrix, new Float32Array(new Array(16).fill(0)))
-
-    const tmpMat2 = new float4x4().translate(12, 1, 0);
+	const lightPosition = [12, 1, 0];
+    const tmpMat2 = new float4x4().translate(lightPosition);
 
 	const lightModelMatrix = new float4x4().scale(.1, .1, .1).multiply(tmpMat2);
 	const render = () => {
@@ -311,34 +313,34 @@ function main() {
 		// const t = 5;
 		const c = Math.cos(t);
 		const s = Math.sin(t);
-		// const viewMatrix = new float4x4().lookAt([2 * c, 0, 2 * s], [0, 0, 0], [0, 1, 0]);
+		const viewMatrix = new float4x4().lookAt([2 * c, 1, 2 * s], [0, 0, 0], [0, 1, 0]);
 		
-		const viewMatrix = new Float32Array(new Array(16).fill(0));
-		glm.mat4.lookAt(
-			viewMatrix,
-			// new Float32Array([2*c, 0, 2*s]),
-			new Float32Array([1, 0, 1]),
-			new Float32Array([0, 0, -1]),
-			new Float32Array([0, 1, 0])
-		);
-		const modelMatrix = new float4x4().rotateZ(c * 180);
-        
+		// const viewMatrix = new Float32Array(new Array(16).fill(0));
+		// glm.mat4.lookAt(
+		// 	viewMatrix,
+		// 	new Float32Array([2*c, 0, 2*s]),
+		// 	new Float32Array([0, 0, 0]),
+		// 	new Float32Array([0, 0, -1]),
+		// 	new Float32Array([0, 1, 0])
+		// );
+		const modelMatrix = new float4x4();       
 
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 		gl.enable(gl.DEPTH_TEST);
 		sphereShader.enable();
-		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_viewMatrix'), false, viewMatrix);
+		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
 		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_projMatrix'), false, projectionMatrix);
 		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_modelMatrix'), false, modelMatrix.elements);
 
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'objectColor'), new Float32Array([1., .5, .31]));
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightColor'), new Float32Array([1., 1., 1.]));
+		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightPos'), new Float32Array(lightPosition));
 
 		gl.drawArrays(gl.TRIANGLES, 0, 36);
 
 		lightShader.enable();
-		gl.uniformMatrix4fv(gl.getUniformLocation(lightShader.program, 'u_viewMatrix'), false, viewMatrix);
+		gl.uniformMatrix4fv(gl.getUniformLocation(lightShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
 		gl.uniformMatrix4fv(gl.getUniformLocation(lightShader.program, 'u_projMatrix'), false, projectionMatrix);
 		gl.uniformMatrix4fv(gl.getUniformLocation(lightShader.program, 'u_modelMatrix'), false, lightModelMatrix.elements);
 		gl.drawArrays(gl.TRIANGLES, 0, 36);
