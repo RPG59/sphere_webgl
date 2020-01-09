@@ -4,8 +4,8 @@
   "description": "",
   "main": "webpack.config.js",
   "dependencies": {
-    "gulp-connect": "^5.7.0",
-    "gulp": "^4.0.2"
+    "gulp": "^4.0.2",
+    "gulp-connect": "^5.7.0"
   },
   "devDependencies": {
     "ts-loader": "^6.2.1",
