@@ -17,6 +17,8 @@
 
     out vec3 FragPos;
     out vec3 Normal;
+    out vec3 N;
+    out vec3 V;
 
     uniform mat4 u_viewMatrix;
     uniform mat4 u_projMatrix;
@@ -26,6 +28,8 @@
         gl_Position = u_projMatrix * u_viewMatrix * u_modelMatrix * vec4(a_position, 1.);
         FragPos = vec3(u_modelMatrix * vec4(a_position, 1.0));
         Normal = a_normal;
+        N = mat3(u_viewMatrix) * a_normal;
+        V = -mat3(u_modelMatrix) * a_position;
     }
 </script>
 <script type="x-shader/x-fragment" id="fs">#version 300 es
@@ -33,6 +37,8 @@
 
     in vec3 Normal;
     in vec3 FragPos;
+    in vec3 N;
+    in vec3 V;
 
     out vec4 FragColor;
 
@@ -50,7 +56,7 @@
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 diffuse = diff * lightColor;
 
-        float specularStrength = .8;
+        float specularStrength = .5;
         vec3 viewDir = normalize(viewPos - FragPos);
         vec3 reflectDir = reflect(-lightDir, norm);  
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128.);

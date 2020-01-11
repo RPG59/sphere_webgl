@@ -303,19 +303,20 @@ function main() {
 	
 
 	// glm.mat4.scale(modelMatrix, new Float32Array(new Array(16).fill(0)))
-	const lightPosition = [12, 1, 0];
-    const tmpMat2 = new float4x4().translate(lightPosition);
-
-	const lightModelMatrix = new float4x4().scale(.1, .1, .1).multiply(tmpMat2);
 	const render = () => {
 	sphereShader.enable();
 		const t = Date.now() / 1000;
 		// const t = 6;
 		const c = Math.cos(t);
 		const s = Math.sin(t);
-		const cameraPosition = [2*c, 1, 2*s];
+
+	    const lightPosition = [12, 2, 0];
+        const tmpMat2 = new float4x4().translate(lightPosition);
+
+	    const lightModelMatrix = new float4x4().scale(.1, .1, .1).multiply(tmpMat2);
+		const cameraPosition = [2*c, 0, 2*s];
 		// const cameraPosition = [0, 0, 3];
-		const viewMatrix = new float4x4().lookAt([2 * c, 1, 2 * s], [0, 0, 0], [0, 1, 0]);
+		const viewMatrix = new float4x4().lookAt(cameraPosition, [0, 0, 0], [0, 1, 0]);
 		// const viewMatrix = new float4x4().lookAt([2*Math.sin(1), 1, 2*Math.cos(1)], [0,0,0], [0, 1, 0]);
 		
 		// const viewMatrix = new Float32Array(new Array(16).fill(0));
@@ -338,8 +339,8 @@ function main() {
 
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'objectColor'), new Float32Array([1., .5, .31]));
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightColor'), new Float32Array([1., 1., 1.]));
-		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightPos'), new Float32Array(cameraPosition));
-		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'viewPos'), new Float32Array([2*c, -1 ,2*s]));
+		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightPos'), new Float32Array(lightPosition));
+		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'viewPos'), new Float32Array(cameraPosition));
 
 		gl.drawArrays(gl.TRIANGLES, 0, 36);
 
