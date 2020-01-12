@@ -225,47 +225,47 @@ function main() {
 
 
 	let sph_vtx = new Float32Array([
-        -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
-         0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
-         0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
-         0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
-        -0.5,  0.5, -0.5,  0.0,  0.0, -1.0,
-        -0.5, -0.5, -0.5,  0.0,  0.0, -1.0,
+		-0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
+		0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  0.0,
+		0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+		0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  1.0,  1.0,
+		-0.5,  0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  1.0,
+		-0.5, -0.5, -0.5,  0.0,  0.0, -1.0,  0.0,  0.0,
 
-        -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
-         0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
-         0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
-         0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
-        -0.5,  0.5,  0.5,  0.0,  0.0,  1.0,
-        -0.5, -0.5,  0.5,  0.0,  0.0,  1.0,
+		-0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
+		0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  0.0,
+		0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+		0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  1.0,  1.0,
+		-0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  1.0,
+		-0.5, -0.5,  0.5,  0.0,  0.0,  1.0,  0.0,  0.0,
 
-        -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
-        -0.5,  0.5, -0.5, -1.0,  0.0,  0.0,
-        -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
-        -0.5, -0.5, -0.5, -1.0,  0.0,  0.0,
-        -0.5, -0.5,  0.5, -1.0,  0.0,  0.0,
-        -0.5,  0.5,  0.5, -1.0,  0.0,  0.0,
+		-0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
+		-0.5,  0.5, -0.5, -1.0,  0.0,  0.0,  1.0,  1.0,
+		-0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+		-0.5, -0.5, -0.5, -1.0,  0.0,  0.0,  0.0,  1.0,
+		-0.5, -0.5,  0.5, -1.0,  0.0,  0.0,  0.0,  0.0,
+		-0.5,  0.5,  0.5, -1.0,  0.0,  0.0,  1.0,  0.0,
 
-         0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
-         0.5,  0.5, -0.5,  1.0,  0.0,  0.0,
-         0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
-         0.5, -0.5, -0.5,  1.0,  0.0,  0.0,
-         0.5, -0.5,  0.5,  1.0,  0.0,  0.0,
-         0.5,  0.5,  0.5,  1.0,  0.0,  0.0,
+		0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
+		0.5,  0.5, -0.5,  1.0,  0.0,  0.0,  1.0,  1.0,
+		0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+		0.5, -0.5, -0.5,  1.0,  0.0,  0.0,  0.0,  1.0,
+		0.5, -0.5,  0.5,  1.0,  0.0,  0.0,  0.0,  0.0,
+		0.5,  0.5,  0.5,  1.0,  0.0,  0.0,  1.0,  0.0,
 
-        -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
-         0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
-         0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
-         0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
-        -0.5, -0.5,  0.5,  0.0, -1.0,  0.0,
-        -0.5, -0.5, -0.5,  0.0, -1.0,  0.0,
+		-0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
+		0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  1.0,  1.0,
+		0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+		0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  1.0,  0.0,
+		-0.5, -0.5,  0.5,  0.0, -1.0,  0.0,  0.0,  0.0,
+		-0.5, -0.5, -0.5,  0.0, -1.0,  0.0,  0.0,  1.0,
 
-        -0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
-         0.5,  0.5, -0.5,  0.0,  1.0,  0.0,
-         0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
-         0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
-        -0.5,  0.5,  0.5,  0.0,  1.0,  0.0,
-        -0.5,  0.5, -0.5,  0.0,  1.0,  0.0
+		-0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0,
+		0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  1.0,  1.0,
+		0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+		0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  1.0,  0.0,
+		-0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  0.0,  0.0,
+		-0.5,  0.5, -0.5,  0.0,  1.0,  0.0,  0.0,  1.0
 	]);
 
 	// @ts-ignore
@@ -287,9 +287,11 @@ function main() {
 	gl.bindBuffer(gl.ARRAY_BUFFER, buff1);
 	gl.bufferData(gl.ARRAY_BUFFER, sph_vtx, gl.STATIC_DRAW);
 	gl.enableVertexAttribArray(0);
-	gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 24, 0);
+	gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 8 * 4, 0);
 	gl.enableVertexAttribArray(1);
-	gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 24, 12);
+	gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 8 * 4, 3 * 4);
+	gl.enableVertexAttribArray(2);
+	gl.vertexAttribPointer(2, 3, gl.FLOAT, false, 8 * 4, 6 * 4);
 
 	
 	// const modelMatrix = new Float32Array(new Array(16).fill(0));
@@ -303,14 +305,29 @@ function main() {
 	
 
 	// glm.mat4.scale(modelMatrix, new Float32Array(new Array(16).fill(0)))
-	const render = () => {
+
+	const lightPosition = [12, 2, 0];
 	sphereShader.enable();
+	
+	
+	
+	gl.uniform1i(gl.getUniformLocation(sphereShader.program, 'material.diffuse'), 2);
+	gl.uniform1i(gl.getUniformLocation(sphereShader.program, 'material.specular'), 3);
+	gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'material.shininess'), 32.);
+
+	gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'light.position'), lightPosition);
+	gl.uniform3f(gl.getUniformLocation(sphereShader.program, 'light.ambient'), .3,.2,.1);
+	gl.uniform3f(gl.getUniformLocation(sphereShader.program, 'light.diffuse'), .5, .7, .1);
+	gl.uniform3f(gl.getUniformLocation(sphereShader.program, 'light.specular'), 1., 1., 1.);
+
+	const render = () => {
+		sphereShader.enable();
 		const t = Date.now() / 1000;
 		// const t = 6;
 		const c = Math.cos(t);
 		const s = Math.sin(t);
+		
 
-	    const lightPosition = [12, 2, 0];
         const tmpMat2 = new float4x4().translate(lightPosition);
 
 	    const lightModelMatrix = new float4x4().scale(.1, .1, .1).multiply(tmpMat2);
@@ -332,13 +349,11 @@ function main() {
 		gl.clearColor(0, 0, 0, 1);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 		gl.enable(gl.DEPTH_TEST);
-		sphereShader.enable();
 		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
 		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_projMatrix'), false, projectionMatrix);
 		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_modelMatrix'), false, modelMatrix.elements);
 
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'objectColor'), new Float32Array([1., .5, .31]));
-		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightColor'), new Float32Array([1., 1., 1.]));
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightPos'), new Float32Array(lightPosition));
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'viewPos'), new Float32Array(cameraPosition));
 
@@ -365,11 +380,17 @@ function main() {
 (async () => {
 	const texture1 = await creatTexture('SpecularMap.png');
 	const texture2 = await creatTexture('NormalMap (2).png');
+	const texture3 = await creatTexture('container2.png');
+	const texture4 = await creatTexture('container2_specular.png');
 
 	gl.activeTexture(gl.TEXTURE0);
 	gl.bindTexture(gl.TEXTURE_2D, texture1);
 	gl.activeTexture(gl.TEXTURE1);
 	gl.bindTexture(gl.TEXTURE_2D, texture2);
+	gl.activeTexture(gl.TEXTURE2);
+	gl.bindTexture(gl.TEXTURE_2D, texture3);
+	gl.activeTexture(gl.TEXTURE3);
+	gl.bindTexture(gl.TEXTURE_2D, texture4);
 
 	main();
 })()

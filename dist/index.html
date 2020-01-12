@@ -14,11 +14,11 @@
 <script type="x-shader/x-vertex" id="vs">#version 300 es
     layout(location=0) in vec3 a_position;
     layout(location=1) in vec3 a_normal;
+    layout(location=2) in vec2 a_textureCoord;
 
     out vec3 FragPos;
     out vec3 Normal;
-    out vec3 N;
-    out vec3 V;
+    out vec2 TexCoords;
 
     uniform mat4 u_viewMatrix;
     uniform mat4 u_projMatrix;
@@ -28,41 +28,52 @@
         gl_Position = u_projMatrix * u_viewMatrix * u_modelMatrix * vec4(a_position, 1.);
         FragPos = vec3(u_modelMatrix * vec4(a_position, 1.0));
         Normal = a_normal;
-        N = mat3(u_viewMatrix) * a_normal;
-        V = -mat3(u_modelMatrix) * a_position;
+        TexCoords = a_textureCoord;
     }
 </script>
 <script type="x-shader/x-fragment" id="fs">#version 300 es
     precision lowp float;
+    struct Material {
+        sampler2D diffuse;
+        sampler2D specular;
+        float shininess;
+    };
+    struct Light {
+        vec3 position;
+    
+        vec3 ambient;
+        vec3 diffuse;
+        vec3 specular;
+    };
+
 
     in vec3 Normal;
-    in vec3 FragPos;
-    in vec3 N;
-    in vec3 V;
+    in vec3 FragPos; // geometry coordinates in global space
+    in vec2 TexCoords;
+
 
     out vec4 FragColor;
 
     uniform vec3 objectColor;
-    uniform vec3 lightColor;
-    uniform vec3 lightPos;
     uniform vec3 viewPos;
+    uniform Material material;
+    uniform Light light;
 
     void main() {
-        float ambientStrength = 0.1;
-        vec3 ambientLight = lightColor * ambientStrength;   
+        vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));   
 
         vec3 norm = normalize(Normal);
-        vec3 lightDir = normalize(lightPos - FragPos);
+        vec3 lightDir = normalize(light.position - FragPos);
         float diff = max(dot(norm, lightDir), 0.0);
-        vec3 diffuse = diff * lightColor;
+        vec3 diffuse = diff * light.diffuse * vec3(texture(material.diffuse, TexCoords));
 
         float specularStrength = .5;
         vec3 viewDir = normalize(viewPos - FragPos);
         vec3 reflectDir = reflect(-lightDir, norm);  
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 128.);
-        vec3 specular = specularStrength * spec * lightColor; 
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+        vec3 specular = spec * light.specular * vec3(texture(material.specular, TexCoords)); 
 
-        vec3 result = (ambientLight + diffuse + specular) * objectColor;
+        vec3 result = (ambient + diffuse + specular) * objectColor;
 
 
 
