@@ -319,11 +319,14 @@ function main() {
 	gl.uniform3f(gl.getUniformLocation(sphereShader.program, 'light.ambient'), .3,.2,.1);
 	gl.uniform3f(gl.getUniformLocation(sphereShader.program, 'light.diffuse'), .5, .7, .1);
 	gl.uniform3f(gl.getUniformLocation(sphereShader.program, 'light.specular'), 1., 1., 1.);
+	gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'light.constant'), 1.);
+	gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'light.linear'), .045);
+	gl.uniform1f(gl.getUniformLocation(sphereShader.program, 'light.quadratic'), .0075);
 
 	const render = () => {
 		sphereShader.enable();
 		const t = Date.now() / 1000;
-		// const t = 6;
+		// const t = 6.2;
 		const c = Math.cos(t);
 		const s = Math.sin(t);
 		
@@ -357,7 +360,13 @@ function main() {
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'lightPos'), new Float32Array(lightPosition));
 		gl.uniform3fv(gl.getUniformLocation(sphereShader.program, 'viewPos'), new Float32Array(cameraPosition));
 
-		gl.drawArrays(gl.TRIANGLES, 0, 36);
+		gl.drawArrays(gl.TRIANGLES, 0, 35);
+
+		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_modelMatrix'), false, modelMatrix.translate([-1.5, 1.5, 0]).elements);
+		gl.drawArrays(gl.TRIANGLES, 0, 35);
+
+		gl.uniformMatrix4fv(gl.getUniformLocation(sphereShader.program, 'u_modelMatrix'), false, modelMatrix.translate([-1.5 * 2, -2, 0]).elements);
+		gl.drawArrays(gl.TRIANGLES, 0, 35);
 
 		lightShader.enable();
 		gl.uniformMatrix4fv(gl.getUniformLocation(lightShader.program, 'u_viewMatrix'), false, viewMatrix.elements);
