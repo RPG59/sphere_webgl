@@ -1,6 +1,5 @@
 import * as glm from './glm.min.js';
 
-console.log(glm);
 declare const gl: WebGLRenderingContext;
 
 class Shader {
